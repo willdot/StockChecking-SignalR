@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.SignalR;
+using StockCheck.SignalRService.Hubs;
 
 namespace StockCheck
 {
@@ -26,6 +28,8 @@ namespace StockCheck
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,6 +45,12 @@ namespace StockCheck
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<StockHub>("/stock");
+            });
+
             app.UseMvc();
         }
     }

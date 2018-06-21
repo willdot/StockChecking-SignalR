@@ -3,18 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using StockCheck.SignalRService.Hubs;
 
 namespace StockCheck.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class StockController : ControllerBase
     {
+        // This is temporary.
+        public static List<string> Source { get; set; } = new List<string>();
+
+        private IHubContext<StockHub> _context;
+
+        public StockController(IHubContext<StockHub> hub)
+        {
+            _context = hub;
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return Source;
         }
 
         // GET api/values/5
@@ -26,20 +38,10 @@ namespace StockCheck.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async void Post([FromBody] string value)
         {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            Source.Add(value);
+            await _context.Clients.All.SendAsync("Add", value);
         }
     }
 }
