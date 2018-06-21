@@ -42,10 +42,10 @@ namespace StockCheck.Controllers
 
         // POST api/values
         [HttpPost]
-        public async void Post([FromBody] string value)
+        public async void Post([FromBody] StockInput value)
         {
-            Source.Add(value);
-            await _context.Clients.All.BroadcastMessage(value);
+            Source.Add(value.Value);
+            await _context.Clients.All.BroadcastMessage(value.Value);
         }
     }
 }
