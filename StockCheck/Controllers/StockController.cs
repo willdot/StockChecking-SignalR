@@ -15,17 +15,21 @@ namespace StockCheck.Controllers
         // This is temporary.
         public static List<string> Source { get; set; } = new List<string>();
 
-        private IHubContext<StockHub> _context;
+        private IHubContext<StockHub, IStockClient> _context;
 
-        public StockController(IHubContext<StockHub> hub)
+        public StockController(IHubContext<StockHub, IStockClient> hub)
         {
             _context = hub;
         }
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult<IEnumerable<string>>>Get()
         {
+            foreach(string value in Source)
+            {
+                await _context.Clients.All.BroadcastMessage(value);
+            }
             return Source;
         }
 
@@ -41,7 +45,7 @@ namespace StockCheck.Controllers
         public async void Post([FromBody] string value)
         {
             Source.Add(value);
-            await _context.Clients.All.SendAsync("Add", value);
+            await _context.Clients.All.BroadcastMessage(value);
         }
     }
 }

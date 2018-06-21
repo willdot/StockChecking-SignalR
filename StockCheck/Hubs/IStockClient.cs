@@ -7,6 +7,6 @@ namespace StockCheck.SignalRService.Hubs
 {
     public interface IStockClient
     {
-        Task Send(string value); 
+        Task BroadcastMessage(string value); 
     }
 }

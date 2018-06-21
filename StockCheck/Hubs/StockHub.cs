@@ -8,6 +8,6 @@ namespace StockCheck.SignalRService.Hubs
 {
     public class StockHub : Hub<IStockClient>
     {
-        public async Task Send(string value) => await Clients.All.Send(value);
+        public async Task Send(string value) => await Clients.All.BroadcastMessage(value);
     }
 }

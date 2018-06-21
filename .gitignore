@@ -1,3 +1,4 @@
 /StockCheck/bin/
 /StockCheck/obj/
 /.vs/
+/StockCheckWebApp/package-lock.json

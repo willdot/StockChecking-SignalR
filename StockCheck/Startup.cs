@@ -29,6 +29,14 @@ namespace StockCheck
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder => {
+                builder
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowAnyOrigin()
+                    .AllowCredentials();
+            }));
+
             services.AddSignalR();
         }
 
@@ -45,7 +53,7 @@ namespace StockCheck
             }
 
             app.UseHttpsRedirection();
-
+            app.UseCors("CorsPolicy");
             app.UseSignalR(routes =>
             {
                 routes.MapHub<StockHub>("/stock");
