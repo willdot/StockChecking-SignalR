@@ -12,9 +12,6 @@ namespace StockCheck.Controllers
     [ApiController]
     public class StockController : ControllerBase
     {
-        // This is temporary.
-        public static List<string> Source { get; set; } = new List<string>();
-
         private IHubContext<StockHub, IStockClient> _context;
         private ITempData _tempData;
 
