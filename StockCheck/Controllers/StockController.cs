@@ -35,6 +35,11 @@ namespace StockCheck.Controllers
         [HttpPost("add")]
         public ActionResult AddStock([FromBody] StockInput input)
         {
+            if (input.Name == "")
+            {
+                return BadRequest("Item name misssing");
+            }
+
             StockItem item = new StockItem()
             {
                 Name = input.Name,
