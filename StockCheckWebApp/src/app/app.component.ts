@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
 
     this._hubConnection = new HubConnectionBuilder()
-    .withUrl('https://localhost:5001/stock')
+    .withUrl('https://localhost:44398/stock')
     .build();
 
     this._hubConnection

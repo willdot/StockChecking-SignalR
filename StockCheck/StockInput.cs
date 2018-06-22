@@ -3,7 +3,8 @@ namespace StockCheck
 {
     public class StockInput
     {
-        public string Value { get; set; }
+        public string Name { get; set; }
+        public int Amount { get; set; }
         public StockInput()
         {
         }

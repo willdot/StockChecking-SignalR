@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using StockCheck.SignalRService.Hubs;
+using StockCheck.TemporaryData;
 
 namespace StockCheck.Controllers
 {
@@ -16,36 +15,61 @@ namespace StockCheck.Controllers
         public static List<string> Source { get; set; } = new List<string>();
 
         private IHubContext<StockHub, IStockClient> _context;
+        private ITempData _tempData;
 
-        public StockController(IHubContext<StockHub, IStockClient> hub)
+        public StockController(IHubContext<StockHub, IStockClient> hub, ITempData tempData)
         {
             _context = hub;
+            _tempData = tempData;
         }
 
         // GET api/values
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>>Get()
+        public  ActionResult<IEnumerable<string>>Get()
         {
-            foreach(string value in Source)
+            return Ok(_tempData.Stock);
+        }
+
+
+        [HttpPost("add")]
+        public ActionResult AddStock([FromBody] StockInput input)
+        {
+            _tempData.AddStock(input);
+            return Ok();
+        }
+
+        [HttpPost("remove")]
+        public ActionResult RemoveStock([FromBody] StockInput input)
+        {
+            try
             {
-                await _context.Clients.All.BroadcastMessage(value);
+                _tempData.RemoveStock(input);
             }
-            return Source;
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            SendStockMessage(input.Name);
+
+            return Ok();
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        private void SendStockMessage(string item)
         {
-            return "value";
-        }
+            try
+            {
+                int stockAmount = _tempData.GetStock(item);
 
-        // POST api/values
-        [HttpPost]
-        public async void Post([FromBody] StockInput value)
-        {
-            Source.Add(value.Value);
-            await _context.Clients.All.BroadcastMessage(value.Value);
+                if (stockAmount <= 5)
+                {
+                    _context.Clients.All.BroadcastMessage($"Item: {item} has {stockAmount} in stock");
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.Clients.All.BroadcastMessage($"Item: {item} {ex}");
+            }   
         }
     }
 }

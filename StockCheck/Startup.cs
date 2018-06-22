@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.SignalR;
 using StockCheck.SignalRService.Hubs;
+using StockCheck.TemporaryData;
 
 namespace StockCheck
 {
@@ -37,6 +38,7 @@ namespace StockCheck
                     .AllowCredentials();
             }));
 
+            services.AddSingleton<ITempData, TempData>();
             services.AddSignalR();
         }
 

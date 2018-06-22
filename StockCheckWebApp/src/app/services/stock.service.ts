@@ -20,7 +20,7 @@ export class StockService {
     const body = JSON.stringify(input);
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const options = {headers: headers};
-    return this._http.post<any>('https://localhost:5001/api/stock/', body, options)
+    return this._http.post<any>('https://localhost:44398/api/stock/', body, options)
     .pipe(
       tap(
         data => console.log(data),
