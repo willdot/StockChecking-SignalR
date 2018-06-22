@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StockCheck.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,67 +8,65 @@ namespace StockCheck.TemporaryData
 {
     public class TempData : ITempData
     {
-        private static Dictionary<string, int> _stock = new Dictionary<string, int>();
+        private static List<StockItem> _stock = new List<StockItem>();
 
-        public Dictionary<string, int> Stock
+        public List<StockItem> Stock
         {
             get
             {
                 return _stock;
             }
-            set
-            {
-
-            }
-
         }
 
         public TempData()
         {
-            _stock.Add("Water", 10);
-            _stock.Add("Coffee", 5);
-            _stock.Add("Chocolate", 6);
+            _stock.Add(new StockItem() { Name = "Water", Amount = 5 });
+            _stock.Add(new StockItem() { Name = "Coffee", Amount = 2 });
+            _stock.Add(new StockItem() { Name = "Chocolate", Amount = 10 });
         }
 
-        public void AddStock(StockInput input)
+        public void AddStock(StockItem input)
         {
-            if (_stock.ContainsKey(input.Name))
+            if (_stock.Count(p => p.Name == input.Name) == 0)
             {
-                _stock[input.Name] += input.Amount;
+                _stock.Add(input);
             }
             else
             {
-                _stock.Add(input.Name, input.Amount);
+                _stock.FirstOrDefault(p => p.Name == input.Name).Amount += input.Amount;
             }
+
         }
 
-        public void RemoveStock(StockInput input)
+        public void RemoveStock(StockItem input)
         {
-            if (_stock.ContainsKey(input.Name))
+            // Not something that is currently stocked
+            if (_stock.Count(p => p.Name == input.Name) == 0)
             {
-                if (_stock[input.Name] <= 0)
-                {
-                    throw new Exception("Out of Stock");
-                }
-
-                if (_stock[input.Name] < input.Amount)
-                {
-                    throw new Exception("Stock amount less than required amount");
-                }
-
-                _stock[input.Name] -= input.Amount;
+                throw new Exception("Item not stocked");
             }
+            // There is nothing left of this item
+            else if (_stock.FirstOrDefault(p => p.Name == input.Name).Amount <= 0)
+            {
+                throw new Exception("Out of Stock");
+            }
+            // The amount that has been requested to be removed is more than what's available
+            else if(_stock.FirstOrDefault(p => p.Name == input.Name).Amount < input.Amount)
+            {
+                throw new Exception("Stock amount less than required amount");
+            }
+            // In stock and the requested amount is available to be removed
             else
             {
-                _stock.Add(input.Name, input.Amount);
+                _stock.FirstOrDefault(p => p.Name == input.Name).Amount -= input.Amount;
             }
         }
 
         public int GetStock(string item)
         {
-            if (_stock.ContainsKey(item))
+            if(_stock.Count(p => p.Name == item) > 0)
             {
-                return _stock[item];
+                return _stock.FirstOrDefault(p => p.Name == item).Amount;
             }
 
             throw new Exception("not currently stocked");

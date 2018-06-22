@@ -1,1 +1,22 @@
-<button (click)='onClicked()'>DO SOMETHING</button>
+<div class='container'>
+    <label>{{errorMessage}}</label>
+</div>
+
+<div class='container'>
+    <div class='label'>Item</div>
+    <select [(ngModel)]='item' id='item' (change)='onSelectedItem($event.target.value)'>
+        <option value='' disabled-selected>Select an item</option>
+        <option *ngFor='let item of items' [value]='item.name'>{{item.name}}</option>
+    </select>
+    {{itemAmount}}
+</div>
+
+<div class='container  col-md-2'>
+    <label>Amount</label>
+    <input type='number' ng-readonly='true' class='form-control textBox' [(ngModel)]='requestedAmount'>
+</div>
+
+<div class='container'>
+    <button (click)='onRemoveStockClicked()'>Request Stock</button>
+    <button (click)='onAddStockClicked()'>Add Stock</button>
+</div>

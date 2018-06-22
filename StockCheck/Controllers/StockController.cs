@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using StockCheck.Models;
 using StockCheck.SignalRService.Hubs;
 using StockCheck.TemporaryData;
 
@@ -34,16 +35,28 @@ namespace StockCheck.Controllers
         [HttpPost("add")]
         public ActionResult AddStock([FromBody] StockInput input)
         {
-            _tempData.AddStock(input);
+            StockItem item = new StockItem()
+            {
+                Name = input.Name,
+                Amount = input.Amount
+            };
+
+            _tempData.AddStock(item);
             return Ok();
         }
 
         [HttpPost("remove")]
         public ActionResult RemoveStock([FromBody] StockInput input)
         {
+            StockItem item = new StockItem()
+            {
+                Name = input.Name,
+                Amount = input.Amount
+            };
+
             try
             {
-                _tempData.RemoveStock(input);
+                _tempData.RemoveStock(item);
             }
             catch (Exception ex)
             {
@@ -60,6 +73,11 @@ namespace StockCheck.Controllers
             try
             {
                 int stockAmount = _tempData.GetStock(item);
+
+                if (stockAmount == 0)
+                {
+                    _context.Clients.All.BroadcastMessage($"Item: {item} is out of stock");
+                }
 
                 if (stockAmount <= 5)
                 {

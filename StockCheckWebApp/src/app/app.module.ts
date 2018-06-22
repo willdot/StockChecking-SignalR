@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { StockComponent } from './stock/stock.component';
 import { HttpClientModule } from '@angular/common/http';
 import { routing } from './app.routing';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { routing } from './app.routing';
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     GrowlModule,
     HttpClientModule,
     routing
